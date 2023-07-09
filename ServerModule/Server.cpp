@@ -203,9 +203,10 @@ Server::Server(int port, int listen_q_size) : _port(port)
     }
     std::cout << "Socket created" << std::endl;
     int opt = 1;
-    if (setsockopt(this->_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
+    if (int a = setsockopt(this->_socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)))
     {
         std::cout << "Error: setsockopt failed" << std::endl;
+        std::cout << a << std::endl;
         exit(1);
     }
     std::cout << "setsockopt done" << std::endl;
