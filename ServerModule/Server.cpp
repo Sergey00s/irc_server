@@ -252,3 +252,30 @@ Server &Server::operator=(Server const & rhs)
     }
     return *this;
 }
+
+
+
+void Server::update_messages()
+{
+    int client_socket;
+    Message msg;
+
+    this->_messages.clear();
+    while ((client_socket = itereate_clients()) != -1)
+    {
+        if (this->check_read(client_socket) == 0)
+            continue;
+        char *message = recive_message(client_socket);
+        if (message != NULL)
+        {
+            msg.message = message;
+            msg.client_socket = client_socket;
+            this->_messages.push_back(msg);
+        }
+    }
+}
+
+std::list<Message> Server::get_messages()
+{
+    return this->_messages;
+}
