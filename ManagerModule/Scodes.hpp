@@ -1,0 +1,9 @@
+#ifndef SCODES_HPP
+
+# define SCODES_HPP
+
+#define STATUS_CONNECTED 301
+#define STATUS_DISCONNECTED 302
+#define STATUS_REGISTERED 303
+
+#endif

@@ -17,7 +17,8 @@ int main(int argc, char **argv)
         }
         server.update_messages();
         std::list<Message> messages = server.get_messages();
-        
+        //std::list<Message> processed_messages = process_messages(messages);
+        //server.send_messages(processed_messages);
     }
     
   

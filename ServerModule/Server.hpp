@@ -65,7 +65,9 @@ class   Server
         char            *recive_message(int client_socket);
 
         void                update_messages();
+        void                send_messages(std::list<Message> messages);
         std::list<Message>  get_messages();
+
 
     public:
         Server          &operator=(Server const & rhs);

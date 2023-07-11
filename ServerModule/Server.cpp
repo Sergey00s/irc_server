@@ -279,3 +279,12 @@ std::list<Message> Server::get_messages()
 {
     return this->_messages;
 }
+
+
+void Server::send_messages(std::list<Message> messages)
+{
+    for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
+    {
+        send_message(it->client_socket, it->message);
+    }
+}
