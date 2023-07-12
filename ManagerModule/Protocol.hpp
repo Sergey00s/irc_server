@@ -56,6 +56,13 @@ class Protocol
     
     public:
         std::list<MESSAGE>      Protocol::update(std::list<MESSAGE> messages);
+        std::string             irc_message_to_client(int type, std::vector<std::string> params);
+
+    private:
+        int    _nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
+        int    _user_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
+        int    _join_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
+        int    _privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
 
 };
 

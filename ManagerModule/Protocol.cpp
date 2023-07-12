@@ -160,27 +160,12 @@ int        Protocol::_is_command(std::string command)
 
 
 
+
 void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
     if (msg.command == "NICK")
     {
-        std::string     new_nick = msg.params[0];
-        this->loby.get_user_by_id(id).set_nick_name(new_nick);
-        return;
-    }
-    if (msg.command == "PRIVMSG")
-    {
-        MESSAGE     new_msg;
-        new_msg.message = msg.trailing;
-        std::string     to_who = msg.params[0];
-        new_msg.id = this->loby.get_user_by_nick_name(to_who).get_id();
-        new_messages.push_back(new_msg);
-        return;
-    }
-    if (msg.command == "JOIN")
-    {
-        std::string     channel = msg.params[0];
-        loby.move_user()
+        this->nick_command(msg, new_messages, id);
         return;
     }
 

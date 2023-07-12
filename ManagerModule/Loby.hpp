@@ -39,6 +39,7 @@ class Loby
         User                get_user_by_nick_name(std::string nick_name);
         User                get_user_by_real_name(std::string real_name);
         User                get_user_by_user_name(std::string user_name);
+        User                *get_user(User user);
 };
 
 

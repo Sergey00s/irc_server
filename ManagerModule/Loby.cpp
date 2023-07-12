@@ -205,3 +205,15 @@ int  Loby::remove_user(User user)
     }
     return -1;
 }
+
+
+User *Loby::get_user(User user)
+{
+    std::list<User>::iterator it;
+    for (it = this->users.begin(); it != this->users.end(); it++)
+    {
+        if (it->get_id() == user.get_id())
+            return &*it;
+    }
+    return NULL;
+}
