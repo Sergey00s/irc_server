@@ -1,5 +1,57 @@
 #include "Protocol.hpp"
 
+std::string decode_command(int type)
+{
+    int command_code;
+
+    if (type == RPL_WELCOME)
+    {
+        return RPL_LOGIN_CODE;
+    }
+    if (type == ERR_NOSUCHCHANNEL)
+    {
+        return "403";
+    }
+    if (type == ERR_NOTREGISTERED)
+    {
+        return "451";
+    }
+    if (type == RPL_TOPIC)
+    {
+        return "332";
+    }
+    if (type == RPL_NAMELIST)
+    {
+        return "353";
+    }
+    if (type == RPL_ENDOFNAMES)
+    {
+        return "366";
+    }
+    if (type == RPL_YOURHOST)
+    {
+        return "002";
+    }
+    if (type == RPL_NAMREPLY)
+    {
+        return "353";
+    }
+    return ("");
+}
+
+std::string Protocol::irc_message_to_client(int type, std::string to, std::string params)
+{
+    std::string     message;
+    std::string     prefix;
+    std::string     command;
+    int             i = 0;
+
+
+    command = decode_command(type);
+    message = ":" + hostname + " " + command + " " + to + " " + params + "\r\n";
+    return (message);
+}
+
 
 int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
@@ -41,7 +93,7 @@ int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
             user.set_id(id);
             user.set_status(STATUS_REGISTERED);
             loby.add_user(user);
-            msgto.message = irc_message_to_client(RPL_WELCOME, std::vector<std::string>());
+            msgto.message = irc_message_to_client(RPL_WELCOME, user.get_nick_name(), std::vector<std::string>());
             msgto.id = id;
             new_messages.push_back(msgto);
         }
@@ -85,6 +137,8 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     }
     return 1;
 }
+
+
 
 
 
