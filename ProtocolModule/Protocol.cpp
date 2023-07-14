@@ -54,6 +54,7 @@ std::list<MESSAGE>      Protocol::update(std::list<MESSAGE> messages)
     {
                 this->_message_handler(*it, new_messages);
     }
+    return (new_messages);
 }
 
 void  Protocol::_message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages)
@@ -65,69 +66,67 @@ void  Protocol::_message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages)
     id = recv.id;
 
     Irc_message msg = this->_irc_parser(raw_msg);
+    for (int i = 0; i < msg.params.size(); i++)
+    {
+        std::cout << msg.command <<  " " <<  msg.params[i] << std::endl;
+    }
+    return ;
     if (this->_is_command(msg.command))
     {
         this->_command_handler(msg, new_messages, id);
     }
     else
     {
-        this->_message_handler(msg, new_messages, id);
+        //this->_message_handler(msg, new_messages, id);
     }
 }
 
+static std::string raw_msg_erase_crlf(std::string raw_msg)
+{
+    std::string::iterator it;
+    std::string::iterator it2;
+
+    if (raw_msg[raw_msg.size() - 1] == '\n')
+        raw_msg.erase(raw_msg.size() - 1);
+    if (raw_msg[raw_msg.size() - 1] == '\r')
+        raw_msg.erase(raw_msg.size() - 1);
+    return raw_msg;
+}
+
+
 Irc_message Protocol::_irc_parser(std::string raw_msg)
 {
-    Irc_message     irc_msg;
-    std::string     prefix;
+    Irc_message     msg;
     std::string     command;
     std::vector<std::string>    params;
-    std::string     trailing;
-    std::string     tmp;
-    int             i;
-    int             j;
 
-    i = 0;
-    j = 0;
-    while (raw_msg[i] == ' ')
-        i++;
-    if (raw_msg[i] == ':')
+    raw_msg = raw_msg_erase_crlf(raw_msg);
+    
+    int i = 0;
+    while (i < raw_msg.size())
     {
-        while (raw_msg[i] != ' ')
+        if (raw_msg[i] == ' ')
         {
-            prefix += raw_msg[i];
-            i++;
+            params.push_back(raw_msg.substr(0, i));
+            raw_msg = raw_msg.substr(i + 1, raw_msg.size() - i);
+            i = 0;
+            continue;
+        }
+        else if (raw_msg[i] == ':')
+        {
+            params.push_back(raw_msg.substr(i + 1, raw_msg.size() - i));
+            raw_msg = "";
+            break;
         }
         i++;
     }
-    while (raw_msg[i] != ' ')
-    {
-        command += raw_msg[i];
-        i++;
-    }
-    i++;
-    while (raw_msg[i] != ':')
-    {
-        tmp = "";
-        while (raw_msg[i] != ' ')
-        {
-            tmp += raw_msg[i];
-            i++;
-        }
-        params.push_back(tmp);
-        i++;
-    }
-    i++;
-    while (raw_msg[i] != '\0')
-    {
-        trailing += raw_msg[i];
-        i++;
-    }
-    irc_msg.raw = raw_msg;
-    irc_msg.prefix = prefix;
-    irc_msg.command = command;
-    irc_msg.params = params;
-    irc_msg.trailing = trailing;
-    return irc_msg;
+    if (raw_msg.size() > 0)
+        params.push_back(raw_msg);
+    command = params[0];
+    params.erase(params.begin());
+    msg.command = command;
+    msg.params = params;
+    return msg;
 }
 
 
@@ -165,8 +164,31 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
 {
     if (msg.command == "NICK")
     {
-        this->nick_command(msg, new_messages, id);
+        this->_nick_command(msg, new_messages, id);
+        std::cout << "{nick command}" << std::endl;
         return;
     }
+    if (msg.command == "USER")
+    {
+        this->_user_command(msg, new_messages, id);
+        std::cout << "{user command}" << std::endl;
+        return;
+    }
+    // if (msg.command == "PING")
+    // {
+    //     this->_ping_command(msg, new_messages, id);
+    //     return;
+    // }
+    if (msg.command == "PRIVMSG")
+    {
+        this->_privmsg_command(msg, new_messages, id);
 
+        return;
+    }
+    if (msg.command == "JOIN")
+    {
+        this->_join_command(msg, new_messages, id);
+        return;
+    }
+    
 }

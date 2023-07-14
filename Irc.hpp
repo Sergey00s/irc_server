@@ -4,6 +4,7 @@
 
 #include <iostream> 
 #include "ServerModule/Server.hpp"
+#include "ProtocolModule/Protocol.hpp"
 
 /*
 
@@ -16,6 +17,18 @@ user status 300 - 399:
 
 */
 
+
+/*
+
+login procces -> 
+    NICK <nickname>
+    USER <username> <hostname> <servername> <realname>
+    PASS <password>
+
+    RPL_WELCOME -> :<servername> 001 <nickname> :Welcome to the Internet Relay Network
+
+
+*/
 
 
 

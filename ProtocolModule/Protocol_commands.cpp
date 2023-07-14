@@ -48,7 +48,7 @@ std::string Protocol::irc_message_to_client(int type, std::string to, std::strin
 
 
     command = decode_command(type);
-    message = ":" + hostname + " " + command + " " + to + " " + params + "\r\n";
+    message = ":" + hostname + " " + command + " " + to + " " + ":" + params + "\r\n";
     return (message);
 }
 
@@ -70,7 +70,7 @@ int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
             user.set_id(id);
             loby.add_user(user);
         }
-        return;
+        return 1;
 }
 
 int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
@@ -93,7 +93,7 @@ int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
             user.set_id(id);
             user.set_status(STATUS_REGISTERED);
             loby.add_user(user);
-            msgto.message = irc_message_to_client(RPL_WELCOME, user.get_nick_name(), std::vector<std::string>());
+            msgto.message = irc_message_to_client(RPL_WELCOME, user.get_nick_name(), "Welcome to the Internet Relay Network");
             msgto.id = id;
             new_messages.push_back(msgto);
         }
@@ -109,28 +109,28 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 
     if (user.get_status() != STATUS_REGISTERED)
     {
-        msgto.message = irc_message_to_client(ERR_NOTREGISTERED, std::vector<std::string>());
+        msgto.message = irc_message_to_client(ERR_NOTREGISTERED, user.get_nick_name(), "You have not registered");
         msgto.id = id;
         new_messages.push_back(msgto);
         return 0;
     }
     if (channel_name[0] != '#')
     {
-        msgto.message = irc_message_to_client(ERR_NOSUCHCHANNEL, std::vector<std::string>());
+        msgto.message = irc_message_to_client(ERR_NOSUCHCHANNEL, user.get_nick_name(), "No such channel");
         msgto.id = id;
         new_messages.push_back(msgto);
         return 0;
     }
     if (loby.move_user(user, channel_name))
     {
-        msgto.message = irc_message_to_client(RPL_TOPIC, std::vector<std::string>());
+        msgto.message = irc_message_to_client(RPL_TOPIC, user.get_nick_name(), channel_name + " :No topic is set");
         msgto.id = id;
         new_messages.push_back(msgto);
         return 1;
     }
     else
     {
-        msgto.message = irc_message_to_client(ERR_NOSUCHCHANNEL, std::vector<std::string>());
+        msgto.message = irc_message_to_client(ERR_NOSUCHCHANNEL, user.get_nick_name(), "No such channel");
         msgto.id = id;
         new_messages.push_back(msgto);
         return 0;
@@ -149,7 +149,7 @@ int Protocol::_privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages
     if (msg.params.size() < 2)
     {
         MESSAGE     msgto;
-        msgto.message = irc_message_to_client(ERR_NEEDMOREPARAMS, std::vector<std::string>());
+        //msgto.message = irc_message_to_client(ERR_NEEDMOREPARAMS, std::vector<std::string>());
         msgto.id = id;
         new_messages.push_back(msgto);
         return 0;

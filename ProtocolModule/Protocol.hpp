@@ -20,10 +20,8 @@ struct MESSAGE
 struct Irc_message
 {
     std::string     raw;
-    std::string     prefix;
     std::string     command;
     std::vector<std::string>    params;
-    std::string     trailing;
 };
 
 class Protocol
@@ -55,7 +53,7 @@ class Protocol
         void           set_password(std::string password);
     
     public:
-        std::list<MESSAGE>      Protocol::update(std::list<MESSAGE> messages);
+        std::list<MESSAGE>      update(std::list<MESSAGE> messages);
         std::string             irc_message_to_client(int type, std::string to, std::string params);
 
     private:

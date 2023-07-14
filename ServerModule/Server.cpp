@@ -253,7 +253,20 @@ Server &Server::operator=(Server const & rhs)
     return *this;
 }
 
-
+static std::vector<std::string> spliter(std::string str, char delim)
+{
+    std::vector<std::string> v;
+    for (int i = 0; i < str.length(); i++)
+    {
+        if (str[i] == delim)
+        {
+            v.push_back(str.substr(0, i));
+            str = str.substr(i + 1, str.length() - i - 1);
+            i = 0;
+        }
+    }
+    return v;
+}
 
 void Server::update_messages()
 {
@@ -268,11 +281,16 @@ void Server::update_messages()
         char *message = recive_message(client_socket);
         if (message != NULL)
         {
-            msg.message = message;
-            msg.client_socket = client_socket;
-            this->_messages.push_back(msg);
+            std::vector<std::string> v = spliter(message, '\n');
+            for (int i = 0; i < v.size(); i++)
+            {
+                msg.message = v[i];
+                msg.client_socket = client_socket;
+                this->_messages.push_back(msg);
+            }
         }
     }
+    
 }
 
 std::list<Message> Server::get_messages()

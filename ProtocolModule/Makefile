@@ -1,4 +1,4 @@
-NAME=protocolirc.a
+NAME=libprotocol.a
 SRCS = $(wildcard *.cpp)
 CP = g++ -std=c++98 #-Wall -Wextra -Werror
 RM = rm -f
