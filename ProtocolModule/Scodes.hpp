@@ -16,6 +16,7 @@
 #define RPL_NAMREPLY 104
 #define RPL_ENDOFNAMES 105
 #define RPL_NAMELIST 106
+#define RPL_PONG 107
 
 // ERR SECTION
 

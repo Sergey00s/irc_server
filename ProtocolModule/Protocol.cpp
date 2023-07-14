@@ -66,11 +66,6 @@ void  Protocol::_message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages)
     id = recv.id;
 
     Irc_message msg = this->_irc_parser(raw_msg);
-    for (int i = 0; i < msg.params.size(); i++)
-    {
-        std::cout << msg.command <<  " " <<  msg.params[i] << std::endl;
-    }
-    return ;
     if (this->_is_command(msg.command))
     {
         this->_command_handler(msg, new_messages, id);
@@ -174,11 +169,12 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
         std::cout << "{user command}" << std::endl;
         return;
     }
-    // if (msg.command == "PING")
-    // {
-    //     this->_ping_command(msg, new_messages, id);
-    //     return;
-    // }
+    if (msg.command == "PING")
+    {
+         this->_ping_command(msg, new_messages, id);
+        std::cout << "{ping command}" << std::endl; 
+         return;
+    }
     if (msg.command == "PRIVMSG")
     {
         this->_privmsg_command(msg, new_messages, id);

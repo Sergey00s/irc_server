@@ -30,8 +30,7 @@ int     Loby::add_user(User user)
 {
     if (user.get_id() == -1)
         return -1;
-    if (user.get_status() != STATUS_REGISTERED)
-        return -1;
+
     user.set_room_name("Loby", 0);
     this->users.push_back(user);
     return 0;
@@ -216,4 +215,9 @@ User *Loby::get_user(User user)
             return &*it;
     }
     return NULL;
+}
+
+std::list<User> &Loby::get_users()
+{
+    return this->users;
 }

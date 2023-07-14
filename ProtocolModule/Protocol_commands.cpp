@@ -36,6 +36,14 @@ std::string decode_command(int type)
     {
         return "353";
     }
+    if (type == RPL_ENDOFNAMES)
+    {
+        return "366";
+    }
+    if (type == RPL_PONG)
+    {
+        return "PONG";
+    }
     return ("");
 }
 
@@ -80,19 +88,19 @@ int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
         User            user = loby.get_user_by_id(id);
         User            *user_in_loby = loby.get_user(user);
 
-        if (user_in_loby)
+        if (user.get_id() != -1 && user.get_status() == STATUS_REGISTERED)
         {
             user_in_loby->set_user_name(user_name);
             user_in_loby->set_real_name(real_name);
         }
-        else
+        else if (user.get_id() != -1 && user.get_status() == STATUS_CONNECTED)
         {
             MESSAGE     msgto;
             user.set_user_name(user_name);
             user.set_real_name(real_name);
             user.set_id(id);
             user.set_status(STATUS_REGISTERED);
-            loby.add_user(user);
+            *user_in_loby = user;
             msgto.message = irc_message_to_client(RPL_WELCOME, user.get_nick_name(), "Welcome to the Internet Relay Network");
             msgto.id = id;
             new_messages.push_back(msgto);
@@ -139,9 +147,6 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 }
 
 
-
-
-
 int Protocol::_privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
     User user = loby.get_user_by_id(id);
@@ -154,5 +159,17 @@ int Protocol::_privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages
         new_messages.push_back(msgto);
         return 0;
     }
+    return 1;
+}
+
+int Protocol::_ping_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
+{
+    User user = loby.get_user_by_id(id);
+    User *user_in_loby = loby.get_user(user);
+    MESSAGE     msgto;
+
+    msgto.message = irc_message_to_client(RPL_PONG, user.get_nick_name(), msg.params[0]);
+    msgto.id = id;
+    new_messages.push_back(msgto);
     return 1;
 }

@@ -46,6 +46,7 @@ User    &User::operator=(User const & src)
     this->user_name = src.user_name;
     this->real_name = src.real_name;
     this->nick_name = src.nick_name;
+    this->status = src.status;
     return *this;
 }
 

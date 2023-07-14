@@ -28,6 +28,7 @@ class Loby
         int                 move_user(User user, std::string room_name);
         int                 remove_user(User user);
         int                 get_last_room_id();
+        std::list<User>     &get_users();
         std::list<User>     get_users_by_room_name(std::string room_name);
         std::list<User>     get_users_by_room_id(int room_id);
         std::list<User>     get_users_by_status(int status);
