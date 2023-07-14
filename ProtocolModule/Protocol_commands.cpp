@@ -60,6 +60,19 @@ std::string Protocol::irc_message_to_client(int type, std::string to, std::strin
     return (message);
 }
 
+static int check_nick(std::string nick, Loby &loby)
+{
+    std::list<User> users = loby.get_users();
+    std::list<User>::iterator it;
+
+    for (it = users.begin(); it != users.end(); it++)
+    {
+        if (it->get_nick_name() == nick)
+            return (1);
+    }
+    return (0);
+}
+
 
 int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
@@ -69,10 +82,22 @@ int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 
         if (user_in_loby)
         {
+            int times = 0;
+            while (check_nick(new_nick, loby) == 1)
+            {
+                times++;
+                new_nick += "(" + std::to_string(times) + "xFake)";
+            }
             user_in_loby->set_nick_name(new_nick);
         }
         else
         {
+            int times = 0;
+            while (check_nick(new_nick, loby) == 1)
+            {
+                times++;
+                new_nick += "(" + std::to_string(times) + "xFake)";
+            }
             user.set_nick_name(new_nick);
             user.set_status(STATUS_CONNECTED);
             user.set_id(id);
