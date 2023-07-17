@@ -18,6 +18,7 @@ class User
     std::string real_name;
     std::string nick_name;
     int         status;
+    int         op_level;
 
     public:
         std::string     room_name;
