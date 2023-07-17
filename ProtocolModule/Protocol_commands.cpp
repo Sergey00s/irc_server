@@ -222,14 +222,31 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 }
 
 
+
+
 int Protocol::_privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
     User user = loby.get_user_by_id(id);
     User *user_in_loby = loby.get_user(user);
     if (msg.params.size() < 2)
+        return 0;
+    if (user.get_status() != STATUS_REGISTERED)
     {
-        MESSAGE     msgto;
-        //msgto.message = irc_message_to_client(ERR_NEEDMOREPARAMS, std::vector<std::string>());
+        MESSAGE msgto;
+        msgto.message = irc_message_to_client(ERR_NOTREGISTERED, user.get_nick_name(), "You have not registered");
+        msgto.id = id;
+        new_messages.push_back(msgto);
+        return 0;
+    }
+    if (msg.params[0][0] != '#')
+    {
+        message_to_channel(msg, new_messages, id);
+        return 1;
+    }
+    else
+    {
+        MESSAGE msgto;
+        msgto.message = irc_message_to_client(ERR_NOSUCHNICK_CODE, user.get_nick_name(), "No such nick");
         msgto.id = id;
         new_messages.push_back(msgto);
         return 0;
