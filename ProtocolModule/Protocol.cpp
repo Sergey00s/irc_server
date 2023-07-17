@@ -186,5 +186,10 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
         this->_join_command(msg, new_messages, id);
         return;
     }
+    if (msg.command == "PART")
+    {
+        this->_part_command(msg, new_messages, id);
+        return;
+    }
     
 }

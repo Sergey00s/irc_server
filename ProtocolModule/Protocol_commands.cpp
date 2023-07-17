@@ -1,5 +1,7 @@
 #include "Protocol.hpp"
 
+
+
 std::string decode_command(int type)
 {
     int command_code;
@@ -133,6 +135,35 @@ int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
         return 1;
 }
 
+
+
+static std::vector<std::string> get_nicks(std::list<User> users)
+{
+    std::vector<std::string> nicks;
+    std::list<User>::iterator it;
+
+    for (it = users.begin(); it != users.end(); it++)
+    {
+        nicks.push_back(it->get_nick_name());
+    }
+    return (nicks);
+}
+
+static int announce_channel(std::string to_ann, std::string channel_name, std::list<MESSAGE> &new_messages, Loby &loby)
+{
+    std::list<User> users = loby.get_users_by_room_name(channel_name);
+
+    for (std::list<User>::iterator it = users.begin(); it != users.end(); it++)
+    {
+        MESSAGE msgto;
+        msgto.message = to_ann;
+        msgto.id = it->get_id();
+        new_messages.push_back(msgto);
+    }
+    return (1);
+}
+
+
 int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
     User user = loby.get_user_by_id(id);
@@ -154,9 +185,28 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
         new_messages.push_back(msgto);
         return 0;
     }
-    if (loby.move_user(user, channel_name))
+    if (loby.move_user(*user_in_loby, channel_name))
     {
-        msgto.message = irc_message_to_client(RPL_TOPIC, user.get_nick_name(), channel_name + " :No topic is set");
+        user = *user_in_loby;
+        //:Nick!Username@Hostname JOIN #Kanal
+        std::string to_ann =  ":" + user.get_nick_name() + "!" + user.get_user_name() + "@" + hostname + " JOIN " + channel_name + "\r\n";
+        announce_channel(to_ann, channel_name, new_messages, this->loby);
+        //:irc.example.com 332 YourNick #hello :Welcome to the channel topic!
+        msgto.message = ":localhost 332 " + user.get_nick_name() + " " + channel_name + " :Welcome to the channel topic!\r\n";
+        msgto.id = id;
+        new_messages.push_back(msgto);
+        //:irc.example.com 353 YourNick = #hello :YourNick @YourNick2
+        std::vector<std::string> nicks = get_nicks(loby.get_users_by_room_name(channel_name));
+        std::string nicks_str = "";
+        for (std::vector<std::string>::iterator it = nicks.begin(); it != nicks.end(); it++)
+        {
+            nicks_str += *it + " ";
+        }
+        msgto.message = ":localhost 353 " + user.get_nick_name() + " = " + channel_name + " :" + nicks_str + "\r\n";
+        msgto.id = id;
+        new_messages.push_back(msgto);
+        //:irc.example.com 366 YourNick #hello :End of /NAMES list.
+        msgto.message = ":localhost 366 " + user.get_nick_name() + " " + channel_name + " :End of /NAMES list.\r\n";
         msgto.id = id;
         new_messages.push_back(msgto);
         return 1;
@@ -198,3 +248,11 @@ int Protocol::_ping_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     new_messages.push_back(msgto);
     return 1;
 }
+
+int Protocol::_part_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
+{
+    return 1;
+}
+
+
+

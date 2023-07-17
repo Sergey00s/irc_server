@@ -36,33 +36,22 @@ int     Loby::add_user(User user)
     return 0;
 }
 
-int     Loby::move_user(User user, std::string room_name)
+int     Loby::move_user(User &user, std::string room_name)
 {
-    std::list<std::string>::iterator it;
-    int i = 0;
-    for (it = this->rooms.begin(); it != this->rooms.end(); it++)
-    {
-        if (*it == room_name)
-        {
-            user.set_room_name(room_name, i);
-            this->users.push_back(user);
-            return 0;
-        }
-        i++;
-    }
-    return -1;
+    user.set_room_name(room_name, this->get_last_room_id());
+    return 1;
 }
 
 std::list<User>     Loby::get_users_by_room_name(std::string room_name)
 {
-    std::list<User>     users;
+    std::list<User>     users_in;
     std::list<User>::iterator it;
     for (it = this->users.begin(); it != this->users.end(); it++)
     {
         if (it->get_room_name() == room_name)
-            users.push_back(*it);
+            users_in.push_back(*it);
     }
-    return users;
+    return users_in;
 }
 
 std::list<User>     Loby::get_users_by_room_id(int room_id)

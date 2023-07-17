@@ -25,7 +25,7 @@ class Loby
         
     public:
         int                 add_user(User user);
-        int                 move_user(User user, std::string room_name);
+        int                 move_user(User &user, std::string room_name);
         int                 remove_user(User user);
         int                 get_last_room_id();
         std::list<User>     &get_users();

@@ -62,7 +62,8 @@ class Protocol
         int    _join_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int    _privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int    _ping_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
-
+        int    _quit_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
+        int    _part_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
 
 };
 
