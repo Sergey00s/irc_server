@@ -96,19 +96,6 @@ int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
             }
             user_in_loby->set_nick_name(new_nick);
         }
-        else
-        {
-            int times = 0;
-            while (check_nick(new_nick, loby) == 1)
-            {
-                times++;
-                new_nick += "(" + std::to_string(times) + "xFake)";
-            }
-            user.set_nick_name(new_nick);
-            user.set_status(STATUS_CONNECTED);
-            user.set_id(id);
-            loby.add_user(user);
-        }
         return 1;
 }
 
@@ -119,32 +106,8 @@ int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
         User            user = loby.get_user_by_id(id);
         User            *user_in_loby = loby.get_user(user);
 
-        if (user.get_id() != -1 && user.get_status() == STATUS_REGISTERED)
-        {
-            user_in_loby->set_user_name(user_name);
-            user_in_loby->set_real_name(real_name);
-        }
-        else if (user.get_id() != -1 && user.get_status() == STATUS_CONNECTED)
-        {
-            MESSAGE     msgto;
-            user.set_user_name(user_name);
-            user.set_real_name(real_name);
-            user.set_id(id);
-            user.set_status(STATUS_REGISTERED);
-            *user_in_loby = user;
-            if (user.check_password(this->password))
-            {
-                msgto.message = irc_message_to_client(RPL_WELCOME, user.get_nick_name(), "Welcome to the Internet Relay Network");
-                msgto.id = id;
-                new_messages.push_back(msgto);
-            }
-            else
-            {
-                msgto.message = ":localhost 464 :Password required";
-                msgto.id = id;
-                new_messages.push_back(msgto);
-            }
-        }
+        user_in_loby->set_user_name(user_name);
+        user_in_loby->set_real_name(real_name);
         return 1;
 }
 
@@ -239,10 +202,15 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 
 int Protocol::_privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+    
     User user = loby.get_user_by_id(id);
     User *user_in_loby = loby.get_user(user);
     if (msg.params.size() < 2)
         return 0;
+    
+    
+    
+    
     if (user.get_status() != STATUS_REGISTERED)
     {
         MESSAGE msgto;
@@ -273,6 +241,8 @@ int Protocol::_ping_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     User *user_in_loby = loby.get_user(user);
     MESSAGE     msgto;
 
+
+
     msgto.message = irc_message_to_client(RPL_PONG, user.get_nick_name(), msg.params[0]);
     msgto.id = id;
     new_messages.push_back(msgto);
@@ -293,5 +263,22 @@ int Protocol::_pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     MESSAGE     msgto;
 
     user_in_loby->set_password(msg.params[0]);
+    std::cout << "password: " << msg.params[0] << std::endl;
+    return 1;
+}
+
+int Protocol::_quit_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
+{
+    User user = loby.get_user_by_id(id);
+    User *user_in_loby = loby.get_user(user);
+    MESSAGE     msgto;
+
+    loby.remove_user(*user_in_loby);
+    msgto.message = ":" + user.get_nick_name() + "!" + user.get_user_name() + "@" + hostname + " QUIT " + msg.params[0] + "\r\n";
+    std::list<ROOM> uroom = user_in_loby->rooms.rooms;
+    for (std::list<ROOM>::iterator it = uroom.begin(); it != uroom.end(); it++)
+    {
+        announce_channel(msgto.message, it->room_name, new_messages, this->loby);
+    }
     return 1;
 }

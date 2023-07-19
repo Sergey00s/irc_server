@@ -66,6 +66,9 @@ class Protocol
         int    _quit_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int    _part_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int     _pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
+
+
+
 };
 
 

@@ -163,39 +163,79 @@ int        Protocol::_is_command(std::string command)
 
 void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+    User current = this->loby.get_user_by_id(id);
+    User *user = this->loby.get_user(current);
+    if (user == NULL)
+    {
+        User new_user(id);
+        loby.add_user(new_user);
+        user = this->loby.get_user(new_user);
+    }
     if (msg.command == "NICK")
     {
         this->_nick_command(msg, new_messages, id);
         std::cout << "{nick command}" << std::endl;
-        return;
     }
-    if (msg.command == "USER")
+    else if (msg.command == "USER")
     {
         this->_user_command(msg, new_messages, id);
         std::cout << "{user command}" << std::endl;
+    }
+    else if (msg.command == "PASS")
+    {
+        this->_pass_command(msg, new_messages, id);
+        std::cout << "{pass command}" << std::endl;
+    }
+    if (user && user->get_nick_name() != "" && user->get_nick_name() != ""  && user->get_status() != STATUS_REGISTERED)
+    {
+        if (this->get_password() != "")
+        {
+            if (user->get_password() != this->get_password())
+            {
+                MESSAGE new_message;
+                new_message.id = id;
+                if (user->get_password() == "")
+                    new_message.message = ":localhost 464 " + user->get_nick_name() + " :Password required";
+                else
+                    new_message.message = ":localhost 464 " + user->get_nick_name() + " :Password incorrect";
+                new_messages.push_back(new_message);
+                return;
+            }
+        }
+        user->set_status(STATUS_REGISTERED);
+        MESSAGE new_message;
+        new_message.id = id;
+        new_message.message = ":localhost 001 " + user->get_nick_name() + " :Welcome to the Internet Relay Network\r\n";
+        new_messages.push_back(new_message);
+        return;
+    }
+    if (msg.command != "NICK" && msg.command != "USER" && msg.command != "PASS" && user->get_status() != STATUS_REGISTERED)
+    {
+        MESSAGE new_message;
+        new_message.id = id;
+        new_message.message = ":localhost 451 :You have not registered\r\n";
+        new_messages.push_back(new_message);
         return;
     }
     if (msg.command == "PING")
     {
          this->_ping_command(msg, new_messages, id);
         std::cout << "{ping command}" << std::endl; 
-         return;
     }
-    if (msg.command == "PRIVMSG")
+    else if (msg.command == "PRIVMSG")
     {
         this->_privmsg_command(msg, new_messages, id);
-
-        return;
     }
-    if (msg.command == "JOIN")
+    else if (msg.command == "JOIN")
     {
         this->_join_command(msg, new_messages, id);
-        return;
     }
-    if (msg.command == "PART")
+    else if (msg.command == "PART")
     {
         this->_part_command(msg, new_messages, id);
-        return;
     }
-    
+    else if (msg.command == "QUIT")
+    {
+        this->_quit_command(msg, new_messages, id);
+    }
 }
