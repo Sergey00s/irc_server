@@ -46,6 +46,10 @@ std::string decode_command(int type)
     {
         return "PONG";
     }
+    if (type == ERR_NICKNAMEINUSE)
+    {
+        return "433";
+    }
     return ("");
 }
 
@@ -128,9 +132,18 @@ int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
             user.set_id(id);
             user.set_status(STATUS_REGISTERED);
             *user_in_loby = user;
-            msgto.message = irc_message_to_client(RPL_WELCOME, user.get_nick_name(), "Welcome to the Internet Relay Network");
-            msgto.id = id;
-            new_messages.push_back(msgto);
+            if (user.check_password(this->password))
+            {
+                msgto.message = irc_message_to_client(RPL_WELCOME, user.get_nick_name(), "Welcome to the Internet Relay Network");
+                msgto.id = id;
+                new_messages.push_back(msgto);
+            }
+            else
+            {
+                msgto.message = ":localhost 464 :Password required";
+                msgto.id = id;
+                new_messages.push_back(msgto);
+            }
         }
         return 1;
 }
@@ -240,13 +253,13 @@ int Protocol::_privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages
     }
     if (msg.params[0][0] != '#')
     {
-        message_to_channel(msg, new_messages, id);
+        //essage_to_channel(msg, new_messages, id);
         return 1;
     }
     else
     {
         MESSAGE msgto;
-        msgto.message = irc_message_to_client(ERR_NOSUCHNICK_CODE, user.get_nick_name(), "No such nick");
+        //msgto.message = irc_message_to_client(ERR_NOSUCHNICK_CODE, user.get_nick_name(), "No such nick");
         msgto.id = id;
         new_messages.push_back(msgto);
         return 0;
@@ -273,3 +286,12 @@ int Protocol::_part_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 
 
 
+int Protocol::_pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
+{
+    User user = loby.get_user_by_id(id);
+    User *user_in_loby = loby.get_user(user);
+    MESSAGE     msgto;
+
+    user_in_loby->set_password(msg.params[0]);
+    return 1;
+}

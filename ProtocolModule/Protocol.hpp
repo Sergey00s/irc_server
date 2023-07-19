@@ -30,7 +30,7 @@ class Protocol
     std::string    password;
 
     private:
-        void    _message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages);
+        void        _message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages);
         int        _is_command(std::string command);
         Irc_message _irc_parser(std::string raw_msg);
         void        _command_handler(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
@@ -40,6 +40,7 @@ class Protocol
         
     public:
         Protocol();
+        Protocol(std::string pass);
         Protocol(Protocol const & src);
         ~Protocol();
 
@@ -64,7 +65,7 @@ class Protocol
         int    _ping_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int    _quit_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int    _part_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
-
+        int     _pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
 };
 
 

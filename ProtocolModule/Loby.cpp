@@ -1,7 +1,5 @@
 #include "Loby.hpp"
 
-
-
 Loby::Loby()
 {
     return ;
@@ -48,23 +46,23 @@ std::list<User>     Loby::get_users_by_room_name(std::string room_name)
     std::list<User>::iterator it;
     for (it = this->users.begin(); it != this->users.end(); it++)
     {
-        if (it->get_room_name() == room_name)
+        if (it->rooms.in(room_name))
             users_in.push_back(*it);
     }
     return users_in;
 }
 
-std::list<User>     Loby::get_users_by_room_id(int room_id)
-{
-    std::list<User>     users;
-    std::list<User>::iterator it;
-    for (it = this->users.begin(); it != this->users.end(); it++)
-    {
-        if (it->get_room_id() == room_id)
-            users.push_back(*it);
-    }
-    return users;
-}
+// std::list<User>     Loby::get_users_by_room_id(int room_id)
+// {
+//     std::list<User>     users;
+//     std::list<User>::iterator it;
+//     for (it = this->users.begin(); it != this->users.end(); it++)
+//     {
+//         if (it->get_room_id() == room_id)
+//             users.push_back(*it);
+//     }
+//     return users;
+// }
 
 
 std::list<User>     Loby::get_users_by_status(int status)

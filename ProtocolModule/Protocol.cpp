@@ -1,10 +1,16 @@
 #include "Protocol.hpp"
 
 
+Protocol::Protocol(std::string pass)
+{
+    this->hostname = "localhost";
+    this->password = pass;
+}
+
 Protocol::Protocol()
 {
     this->hostname = "localhost";
-    this->password = "password";
+    this->password = "";
 }
 
 Protocol::Protocol(Protocol const & src)

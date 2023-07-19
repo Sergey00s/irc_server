@@ -56,8 +56,7 @@ int main(int argc, char **argv)
     Protocol protocol;
     
     protocol.set_hostname("localhost");
-    protocol.set_password("password");
-
+    protocol.set_password("pass");
     while (1)
     {
         server.update();

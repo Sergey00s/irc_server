@@ -109,17 +109,38 @@ void       User::set_status(int status)
 
 void      User::set_room_name(std::string room_name, int id)
 {
-    this->room_name = room_name;
-    this->room_id = id;
+    id = 0;
+    this->rooms.add(room_name);
     return ;
 }
 
 std::string User::get_room_name()
 {
-    return this->room_name;
+    return "";
 }
 
 int User::get_room_id()
 {
-    return this->room_id;
+    return -1;
+}
+
+
+int User::check_password(std::string to_check)
+{
+    if (this->password_in == to_check || to_check == "")
+        return 1;
+    return 0;
+}
+
+
+
+void User::set_password(std::string password)
+{
+    this->password_in = password;
+    return ;
+}
+
+std::string User::get_password()
+{
+    return this->password_in;
 }
