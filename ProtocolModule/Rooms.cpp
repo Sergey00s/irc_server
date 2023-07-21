@@ -38,12 +38,9 @@ int             ROOMS::in(std::string room_name)
     return 0;
 }
 
-int             ROOMS::op_level(std::string room_name)
+int  ROOMS::op_level(std::string room_name)
 {
     std::list<ROOM>::iterator it;
-
-    if (rooms.size() == 0)
-        std::cout << "rooms is empty" << std::endl;
 
     it = this->rooms.begin();
     while (it != this->rooms.end())

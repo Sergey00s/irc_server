@@ -123,11 +123,8 @@ static std::vector<std::string> get_nicks(std::list<User> users, std::string roo
     {
         
         nick = it->get_nick_name();
-        std::cout << it->rooms.op_level(room_name) << std::endl;
         if (it->rooms.op_level(room_name) > 0)
             nick = "@" + nick;
-        
-        std::cout << "nick: " << nick << " " << it->rooms.op_level(room_name) << std::endl;
         nicks.push_back(nick);
     }
     return (nicks);
@@ -172,7 +169,6 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     if (loby.move_user(user_in_loby, channel_name))
     {
         //:Nick!Username@Hostname JOIN #Kanal
-        std::cout << "adres1 " << &(user_in_loby->rooms.rooms) << " oplevel : " << user_in_loby->rooms.op_level(channel_name) << std::endl;
         std::string to_ann =  ":" + user_in_loby->get_nick_name() + "!" + user_in_loby->get_user_name() + "@" + hostname + " JOIN " + channel_name + "\r\n";
         announce_channel(to_ann, channel_name, new_messages, this->loby);
         //:irc.example.com 332 YourNick #hello :Welcome to the channel topic!
@@ -273,7 +269,6 @@ int Protocol::_pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     MESSAGE     msgto;
 
     user_in_loby->set_password(msg.params[0]);
-    std::cout << "password: " << msg.params[0] << std::endl;
     return 1;
 }
 
@@ -287,7 +282,6 @@ int Protocol::_quit_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     std::list<ROOM> uroom = user_in_loby->rooms.rooms;
     for (std::list<ROOM>::iterator it = uroom.begin(); it != uroom.end(); it++)
     {
-        std::cout << "room: " << it->room_name << std::endl;
         announce_channel(to, it->room_name, new_messages, this->loby);
     }
     msgto.message = ":localhost 400 " + user.get_nick_name() + " :Quit: " + msg.params[0] + "\r\n";

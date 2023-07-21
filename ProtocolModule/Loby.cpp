@@ -58,12 +58,6 @@ std::list<User>     Loby::get_users_by_room_name(std::string room_name)
         if (it->rooms.in(room_name))
             users_in.push_back(*it);
     }
-
-    for (it = users_in.begin(); it != users_in.end(); it++)
-    {
-        std::cout << "a " << it->rooms.op_level(room_name) << std::endl;
-    }
-
     return users_in;
 }
 

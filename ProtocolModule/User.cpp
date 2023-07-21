@@ -47,6 +47,7 @@ User    &User::operator=(User const & src)
     this->real_name = src.real_name;
     this->nick_name = src.nick_name;
     this->status = src.status;
+    this->rooms = src.rooms;
     return *this;
 }
 
@@ -111,7 +112,6 @@ void      User::set_room_name(std::string room_name, int id)
 {
     id = 0;
     this->rooms.add(room_name);
-    std::cout << "adres : " << &this->rooms << std::endl;
     return ;
 }
 

@@ -69,10 +69,10 @@ int main(int argc, char **argv)
         }
         server.update_messages();
         std::list<Message> messages = server.get_messages();
-        // for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
-        // {
-        //     std::cout << "Message received: " << it->message << std::endl;
-        // }
+        for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
+        {
+            std::cout << "Message received: " << it->message << std::endl;
+        }
         std::list<MESSAGE> to_be_msg = protocol.update(convert_to_protocol_meesage_list(messages));
         for (std::list<MESSAGE>::iterator it = to_be_msg.begin(); it != to_be_msg.end(); it++)
         {
