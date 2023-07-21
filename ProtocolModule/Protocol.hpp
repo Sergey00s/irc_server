@@ -15,6 +15,7 @@ struct MESSAGE
 {
     std::string     message;
     int             id;
+    std::string     status;
 };
 
 struct Irc_message
@@ -34,6 +35,7 @@ class Protocol
         int        _is_command(std::string command);
         Irc_message _irc_parser(std::string raw_msg);
         void        _command_handler(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
+        int         _protocol_command_handler(MESSAGE recv);
         
     public:
         Loby          loby;

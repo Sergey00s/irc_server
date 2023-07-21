@@ -113,14 +113,22 @@ int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 
 
 
-static std::vector<std::string> get_nicks(std::list<User> users)
+static std::vector<std::string> get_nicks(std::list<User> users, std::string room_name)
 {
     std::vector<std::string> nicks;
     std::list<User>::iterator it;
+    std::string nick;
 
     for (it = users.begin(); it != users.end(); it++)
     {
-        nicks.push_back(it->get_nick_name());
+        
+        nick = it->get_nick_name();
+        std::cout << it->rooms.op_level(room_name) << std::endl;
+        if (it->rooms.op_level(room_name) > 0)
+            nick = "@" + nick;
+        
+        std::cout << "nick: " << nick << " " << it->rooms.op_level(room_name) << std::endl;
+        nicks.push_back(nick);
     }
     return (nicks);
 }
@@ -161,30 +169,32 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
         new_messages.push_back(msgto);
         return 0;
     }
-    if (loby.move_user(*user_in_loby, channel_name))
+    if (loby.move_user(user_in_loby, channel_name))
     {
-        user = *user_in_loby;
         //:Nick!Username@Hostname JOIN #Kanal
-        std::string to_ann =  ":" + user.get_nick_name() + "!" + user.get_user_name() + "@" + hostname + " JOIN " + channel_name + "\r\n";
+        std::cout << "adres1 " << &(user_in_loby->rooms.rooms) << " oplevel : " << user_in_loby->rooms.op_level(channel_name) << std::endl;
+        std::string to_ann =  ":" + user_in_loby->get_nick_name() + "!" + user_in_loby->get_user_name() + "@" + hostname + " JOIN " + channel_name + "\r\n";
         announce_channel(to_ann, channel_name, new_messages, this->loby);
         //:irc.example.com 332 YourNick #hello :Welcome to the channel topic!
-        msgto.message = ":localhost 332 " + user.get_nick_name() + " " + channel_name + " :Welcome to the channel topic!\r\n";
+        msgto.message = ":localhost 332 " + user_in_loby->get_nick_name() + " " + channel_name + " :Welcome to the channel topic!\r\n";
         msgto.id = id;
         new_messages.push_back(msgto);
         //:irc.example.com 353 YourNick = #hello :YourNick @YourNick2
-        std::vector<std::string> nicks = get_nicks(loby.get_users_by_room_name(channel_name));
+        std::vector<std::string> nicks = get_nicks(loby.get_users_by_room_name(channel_name), channel_name);
         std::string nicks_str = "";
         for (std::vector<std::string>::iterator it = nicks.begin(); it != nicks.end(); it++)
         {
             nicks_str += *it + " ";
+
         }
-        msgto.message = ":localhost 353 " + user.get_nick_name() + " = " + channel_name + " :" + nicks_str + "\r\n";
+        msgto.message = ":localhost 353 " + user_in_loby->get_nick_name() + " = " + channel_name + " :" + nicks_str + "\r\n";
         msgto.id = id;
         new_messages.push_back(msgto);
         //:irc.example.com 366 YourNick #hello :End of /NAMES list.
-        msgto.message = ":localhost 366 " + user.get_nick_name() + " " + channel_name + " :End of /NAMES list.\r\n";
+        msgto.message = ":localhost 366 " + user_in_loby->get_nick_name() + " " + channel_name + " :End of /NAMES list.\r\n";
         msgto.id = id;
         new_messages.push_back(msgto);
+
         return 1;
     }
     else
@@ -273,12 +283,20 @@ int Protocol::_quit_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     User *user_in_loby = loby.get_user(user);
     MESSAGE     msgto;
 
-    loby.remove_user(*user_in_loby);
-    msgto.message = ":" + user.get_nick_name() + "!" + user.get_user_name() + "@" + hostname + " QUIT " + msg.params[0] + "\r\n";
+    std::string to = ":" + user.get_nick_name() + "!" + user.get_user_name() + "@" + hostname + " QUIT " + msg.params[0] + "\r\n";
     std::list<ROOM> uroom = user_in_loby->rooms.rooms;
     for (std::list<ROOM>::iterator it = uroom.begin(); it != uroom.end(); it++)
     {
-        announce_channel(msgto.message, it->room_name, new_messages, this->loby);
+        std::cout << "room: " << it->room_name << std::endl;
+        announce_channel(to, it->room_name, new_messages, this->loby);
     }
+    msgto.message = ":localhost 400 " + user.get_nick_name() + " :Quit: " + msg.params[0] + "\r\n";
+    msgto.id = id;
+    loby.remove_user(*user_in_loby);
+    new_messages.push_back(msgto);
+    msgto.message = "";
+    msgto.status = "0000";
+    msgto.id = id;
+    new_messages.push_back(msgto);
     return 1;
 }

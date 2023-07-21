@@ -25,6 +25,7 @@ struct Message
 {
     std::string     message;
     int             client_socket;
+    std::string     status_out;
 };
 
 
@@ -45,7 +46,8 @@ class   Server
         std::string     _log_time();
         void            _add_client(int client_socket);
         void            _remove_client(int client_socket);
-
+        int             _push_message(int client_socket, std::string message, std::string status);
+        int             _command_handler(Message msg);
     public:
                         Server(int port, int listen_queue_size);
                         Server(Server const & src);

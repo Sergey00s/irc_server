@@ -63,6 +63,20 @@ std::list<MESSAGE>      Protocol::update(std::list<MESSAGE> messages)
     return (new_messages);
 }
 
+int Protocol::_protocol_command_handler(MESSAGE recv)
+{
+    std::string status = recv.status;
+    if (status == "0000")
+    {
+        this->loby.remove_user(recv.id);
+        std::cout << "User " << recv.id << " disconnected" << std::endl;
+        return (1);
+    }
+    return (0);
+}
+
+
+
 void  Protocol::_message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages)
 {
     std::string     raw_msg;
@@ -70,6 +84,9 @@ void  Protocol::_message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages)
 
     raw_msg = recv.message;
     id = recv.id;
+
+    if (_protocol_command_handler(recv))
+        return ;
 
     Irc_message msg = this->_irc_parser(raw_msg);
     if (this->_is_command(msg.command))
@@ -165,6 +182,7 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
 {
     User current = this->loby.get_user_by_id(id);
     User *user = this->loby.get_user(current);
+    std::cout << "command handler :" << msg.command << std::endl;
     if (user == NULL)
     {
         User new_user(id);
@@ -236,6 +254,7 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
     }
     else if (msg.command == "QUIT")
     {
+        std::cout << "{quit command}" << std::endl;
         this->_quit_command(msg, new_messages, id);
     }
 }

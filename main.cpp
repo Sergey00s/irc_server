@@ -8,6 +8,7 @@ MESSAGE  convert_to_protocol_message(Message msg)
 
     message.message = msg.message;
     message.id = msg.client_socket;
+    message.status = msg.status_out;
     return (message);
 }
 
@@ -17,6 +18,7 @@ Message convert_to_server_message(MESSAGE msg)
 
     message.message = msg.message;
     message.client_socket = msg.id;
+    message.status_out = msg.status;
     return (message);
 }
 
@@ -67,10 +69,10 @@ int main(int argc, char **argv)
         }
         server.update_messages();
         std::list<Message> messages = server.get_messages();
-        for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
-        {
-            std::cout << "Message received: " << it->message << std::endl;
-        }
+        // for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
+        // {
+        //     std::cout << "Message received: " << it->message << std::endl;
+        // }
         std::list<MESSAGE> to_be_msg = protocol.update(convert_to_protocol_meesage_list(messages));
         for (std::list<MESSAGE>::iterator it = to_be_msg.begin(); it != to_be_msg.end(); it++)
         {

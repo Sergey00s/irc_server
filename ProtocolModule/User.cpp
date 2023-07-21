@@ -111,6 +111,7 @@ void      User::set_room_name(std::string room_name, int id)
 {
     id = 0;
     this->rooms.add(room_name);
+    std::cout << "adres : " << &this->rooms << std::endl;
     return ;
 }
 

@@ -1,5 +1,16 @@
 #include "Server.hpp"
 
+int Server::_push_message(int client_socket, std::string message, std::string status)
+{
+    Message msg;
+
+    msg.client_socket = client_socket;
+    msg.message = message;
+    msg.status_out = status;
+    this->_messages.push_back(msg);
+    return 1;
+}
+
 
 int Server::check_read(int client_socket)
 {
@@ -75,7 +86,16 @@ void    Server::_add_client(int client_socket)
 
 void    Server::_remove_client(int client_socket)
 {
-    this->_clients.remove(client_socket);
+    std::list<int> updated_list;
+
+    for (std::list<int>::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+    {
+        if (*it != client_socket)
+        {
+            updated_list.push_back(*it);
+        }
+    }
+    this->_clients = updated_list;
 }
 
 std::string Server::_log_time()
@@ -103,6 +123,7 @@ char    *Server::recive_message(int client_socket)
         else
         {
             std::cout << _log_time() << " Error: recv failed" << std::endl;
+            _push_message(client_socket, "", "0000");
             _remove_client(client_socket);
             return NULL;
         }
@@ -111,6 +132,8 @@ char    *Server::recive_message(int client_socket)
     {
         std::cout << _log_time() << " Client disconnected" << std::endl;
         _remove_client(client_socket);
+        _push_message(client_socket, "", "0000");
+        close(client_socket);
         return NULL;
     }
     return strdup(buffer);
@@ -122,6 +145,7 @@ int Server::send_message(int client_socket, std::string message)
     if (valsend < 0)
     {
         std::cout << _log_time() << " Error: send failed" << std::endl;
+        _push_message(client_socket, "", "0000");
         _remove_client(client_socket);
         return 0;
     }
@@ -299,10 +323,27 @@ std::list<Message> Server::get_messages()
 }
 
 
+int Server::_command_handler(Message msg)
+{
+    if (msg.status_out == "0000")
+    {
+        std::cout << _log_time() << " Client " << msg.client_socket << " disconnected" << std::endl;
+        _remove_client(msg.client_socket);
+        close(msg.client_socket);
+        return 1;
+    }
+    return 0;
+}
+
 void Server::send_messages(std::list<Message> messages)
 {
+
     for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
     {
-        send_message(it->client_socket, it->message);
+        _command_handler(*it);
+        if (it->message != "")
+            send_message(it->client_socket, it->message);
     }
+    if (messages.size() > 0)
+        std::cout << _log_time() << " Messages sent" << std::endl;
 }

@@ -1,4 +1,4 @@
-NAME=irc
+NAME= ./build/irc
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
 CP = g++ -std=c++98 #-Wall -Wextra -Werror 

@@ -19,7 +19,7 @@ Loby::~Loby()
 Loby    &Loby::operator=(Loby const & src)
 {
     this->users = src.users;
-    this->rooms = src.rooms;
+    this->last_room_id = src.last_room_id;
     return *this;
 }
 
@@ -34,9 +34,18 @@ int     Loby::add_user(User user)
     return 0;
 }
 
-int     Loby::move_user(User &user, std::string room_name)
+int     Loby::move_user(User *user, std::string room_name)
 {
-    user.set_room_name(room_name, this->get_last_room_id());
+    int check = 0;
+
+    std::list<User> users_in_ch = this->get_users_by_room_name(room_name);
+    if (users_in_ch.size() > 0)
+        check = 1;
+    user->set_room_name(room_name, this->get_last_room_id());
+    if (check == 0)
+        user->rooms.set_op_level(room_name, 1);
+    else
+        user->rooms.set_op_level(room_name, 0);
     return 1;
 }
 
@@ -49,6 +58,12 @@ std::list<User>     Loby::get_users_by_room_name(std::string room_name)
         if (it->rooms.in(room_name))
             users_in.push_back(*it);
     }
+
+    for (it = users_in.begin(); it != users_in.end(); it++)
+    {
+        std::cout << "a " << it->rooms.op_level(room_name) << std::endl;
+    }
+
     return users_in;
 }
 
@@ -178,18 +193,15 @@ User  Loby::get_user_by_user_name(std::string user_name)
 
 int  Loby::remove_user(User user)
 {
+    std::list<User> updated;
     std::list<User>::iterator it;
-    int i = 0;
     for (it = this->users.begin(); it != this->users.end(); it++)
     {
-        if (it->get_id() == user.get_id())
-        {
-            this->users.erase(it);
-            return 0;
-        }
-        i++;
+        if (it->get_id() != user.get_id())
+            updated.push_back(*it);
     }
-    return -1;
+    this->users = updated;
+    return 1;
 }
 
 
