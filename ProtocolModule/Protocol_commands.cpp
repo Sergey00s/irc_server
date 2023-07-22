@@ -82,6 +82,11 @@ static int check_nick(std::string nick, Loby &loby)
 
 int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+        if (msg.params.size() < 1)
+        {
+            return 0;
+        }
+
         std::string     new_nick = msg.params[0];
         User    user = loby.get_user_by_id(id);
         User    *user_in_loby = loby.get_user(user);
@@ -101,6 +106,11 @@ int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 
 int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+        if (msg.params.size() < 4)
+        {
+            return 0;
+        }
+
         std::string     user_name = msg.params[0];
         std::string     real_name = msg.params[3];
         User            user = loby.get_user_by_id(id);
@@ -130,7 +140,7 @@ static std::vector<std::string> get_nicks(std::list<User> users, std::string roo
     return (nicks);
 }
 
-static int announce_channel(std::string to_ann, std::string channel_name, std::list<MESSAGE> &new_messages, Loby &loby)
+int announce_channel(std::string to_ann, std::string channel_name, std::list<MESSAGE> &new_messages, Loby &loby)
 {
     std::list<User> users = loby.get_users_by_room_name(channel_name);
 
@@ -147,6 +157,11 @@ static int announce_channel(std::string to_ann, std::string channel_name, std::l
 
 int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+    if (msg.params.size() < 1)
+    {
+        return 0;
+    }
+
     User user = loby.get_user_by_id(id);
     User *user_in_loby = loby.get_user(user);
     std::string channel_name = msg.params[0];
@@ -218,15 +233,15 @@ int Protocol::_ping_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     return 1;
 }
 
-int Protocol::_part_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
-{
-    return 1;
-}
 
 
 
 int Protocol::_pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+    if (msg.params.size() < 1)
+    {
+        return 0;
+    }
     User user = loby.get_user_by_id(id);
     User *user_in_loby = loby.get_user(user);
     MESSAGE     msgto;

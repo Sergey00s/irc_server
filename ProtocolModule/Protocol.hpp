@@ -10,6 +10,15 @@
 # include "Loby.hpp"
 # include "Scodes.hpp"
 
+#define PRIVMSG 852
+#define JOIN 853
+#define NICK 854
+#define USER 855
+#define PASS 856
+#define PING 857
+#define PONG 858
+#define TOPIC 859
+
 
 struct MESSAGE
 {
@@ -68,7 +77,8 @@ class Protocol
         int    _quit_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int    _part_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int     _pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
-
+        int     _kick_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
+        
 
 
 };

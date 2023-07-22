@@ -1,5 +1,6 @@
 #include "Protocol.hpp"
 
+int precheck(Irc_message msg, int type);
 
 Protocol::Protocol(std::string pass)
 {
@@ -103,7 +104,9 @@ static std::string raw_msg_erase_crlf(std::string raw_msg)
 {
     std::string::iterator it;
     std::string::iterator it2;
-
+    
+    if (raw_msg.size() <= 1)
+        return (raw_msg);
     if (raw_msg[raw_msg.size() - 1] == '\n')
         raw_msg.erase(raw_msg.size() - 1);
     if (raw_msg[raw_msg.size() - 1] == '\r')
@@ -238,11 +241,11 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
     if (msg.command == "PING")
     {
          this->_ping_command(msg, new_messages, id);
-        std::cout << "{ping command}" << std::endl; 
     }
     else if (msg.command == "PRIVMSG")
     {
-        this->_privmsg_command(msg, new_messages, id);
+        if (precheck(msg, PRIVMSG))
+            this->_privmsg_command(msg, new_messages, id);
     }
     else if (msg.command == "JOIN")
     {
@@ -254,7 +257,10 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
     }
     else if (msg.command == "QUIT")
     {
-        std::cout << "{quit command}" << std::endl;
         this->_quit_command(msg, new_messages, id);
+    }
+    else if (msg.command == "KICK")
+    {
+        this->_kick_command(msg, new_messages, id);
     }
 }
