@@ -6,12 +6,15 @@ Protocol::Protocol(std::string pass)
 {
     this->hostname = "localhost";
     this->password = pass;
+    this->bot_secret = "123456789";
 }
 
 Protocol::Protocol()
 {
     this->hostname = "localhost";
     this->password = "";
+    this->bot_secret = "123456789";
+
 }
 
 Protocol::Protocol(Protocol const & src)
@@ -29,6 +32,7 @@ Protocol    &Protocol::operator=(Protocol const & src)
 {
     this->hostname = src.hostname;
     this->password = src.password;
+    this->bot_secret = "123456789";
     return *this;
 }
 
@@ -40,6 +44,16 @@ std::string    Protocol::get_hostname()
 std::string    Protocol::get_password()
 {
     return this->password;
+}
+
+std::string     Protocol::get_bot_secret()
+{
+    return this->bot_secret;
+}
+
+void           Protocol::set_bot_secret(std::string bot_secret)
+{
+    this->bot_secret = bot_secret;
 }
 
 void           Protocol::set_hostname(std::string hostname)
@@ -88,6 +102,21 @@ void  Protocol::_message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages)
 
     if (_protocol_command_handler(recv))
         return ;
+
+    if (raw_msg.size() <= 1)
+        return ;
+    
+    if (_bot_is_bot(raw_msg))
+    {
+        std::cout << "BOT REQUEST" << std::endl;
+        BOT bot = bot_parse(raw_msg);
+        if (bot_auth(this->bot_secret, bot.bot_secret))
+        {
+            std::cout << "BOT PARSED" << std::endl;
+            this->_bot_command_handler(bot, new_messages, id);
+        }
+        return ;
+    }
 
     Irc_message msg = this->_irc_parser(raw_msg);
     if (this->_is_command(msg.command))

@@ -9,6 +9,7 @@
 # include <list>
 # include "Loby.hpp"
 # include "Scodes.hpp"
+# include "Bot.hpp"
 
 #define PRIVMSG 852
 #define JOIN 853
@@ -19,6 +20,10 @@
 #define PONG 858
 #define TOPIC 859
 
+
+BOT bot_parse(std::string raw_msg);
+int     bot_auth(std::string bot_secret, std::string secret);
+int     _bot_is_bot(std::string raw_msg);
 
 struct MESSAGE
 {
@@ -38,6 +43,7 @@ class Protocol
 {
     std::string    hostname;
     std::string    password;
+    std::string    bot_secret;
 
     private:
         void        _message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages);
@@ -61,8 +67,11 @@ class Protocol
     public:
         std::string    get_hostname();
         std::string    get_password();
+        std::string    get_bot_secret();
         void           set_hostname(std::string hostname);
         void           set_password(std::string password);
+        void           set_bot_secret(std::string bot_secret);
+
     
     public:
         std::list<MESSAGE>      update(std::list<MESSAGE> messages);
@@ -78,7 +87,10 @@ class Protocol
         int    _part_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int     _pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
         int     _kick_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id);
-        
+
+
+    private:
+        int     _bot_command_handler(BOT msg, std::list<MESSAGE> &new_messages, int id);
 
 
 };
