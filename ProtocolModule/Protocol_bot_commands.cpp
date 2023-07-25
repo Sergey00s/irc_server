@@ -2,6 +2,28 @@
 
 int announce_channel(std::string to_ann, std::string channel_name, std::list<MESSAGE> &new_messages, Loby &loby);
 
+int reply(int status, std::list<MESSAGE> &new_messages, int id)
+{
+    MESSAGE new_message;
+    new_message.id = id;
+    new_message.status = "";
+    if (status == 1)
+        new_message.message = "OK -END-\n";
+    else
+        new_message.message = "KO -END-\n";
+    new_messages.push_back(new_message);
+    return 1;
+}
+
+int reply_parse(std::string raw, int con)
+{
+    if (con)
+        raw = raw;
+    else
+        raw = raw + "-END-\n";
+    return 1;
+}
+
 BOT bot_parse(std::string raw_msg)
 {
     std::vector <std::string>   params;
@@ -44,7 +66,6 @@ int     bot_auth(std::string bot_secret, std::string secret)
 {
     if (bot_secret == secret)
         return 1;
-    std:: cout << "BOT AUTH FAILED : " << bot_secret << " -> "<< secret << std::endl;
     return 0;
 }
 
@@ -72,23 +93,88 @@ int     Protocol::_bot_command_handler(BOT msg, std::list<MESSAGE> &new_messages
 {
     MESSAGE new_message;
     
-    std::cout << "burda mıyım" << std::endl;
     if (msg.command == "ANN")
     {
-        for (int i = 0; i < msg.params.size(); i++)
-        {
-            new_message.message += msg.params[i];
-        }
+        std::string message = msg.params[1];
         std::string to_ann;
-        to_ann = ":irc_bot PRIVMSG " + msg.params[1] + " :" + new_message.message + "\r\n";
-        std::cout  << to_ann << std::endl;
-        announce_channel(new_message.message, msg.params[1], new_messages, this->loby);
+        to_ann = ":irc_bot PRIVMSG " + msg.params[0] + " :" + message + "\r\n";
+        announce_channel(to_ann, msg.params[0], new_messages, this->loby);
         new_message.id = id;
         new_message.status = "";
         new_message.message = "OK\n";
         new_messages.push_back(new_message);
-        std::cout << "sendeaaaaa" << std::endl;
     }
-    std::cout << "BOT COMMAND HANDLER : " << msg.command << std::endl;
+    if (msg.command == "GLM")
+    {
+        _bot_get_last_messages(msg, new_messages, id);
+    }
+    if (msg.command == "GCH")
+    {
+        _bot_get_channels(msg, new_messages, id);
+    }
+    return 1;
+}
+
+int Protocol::_bot_get_last_messages(BOT msg, std::list<MESSAGE> &new_messages, int id)
+{
+    MESSAGE new_message;
+    std::string message;
+    std::list<priv_message>::iterator it;
+    int i = 0;
+    if (msg.params.size() < 1)
+        return reply(0, new_messages, id);
+    std::string channel = msg.params[0];
+    new_message.id = id;
+    new_message.message = "OK\n";
+    new_messages.push_back(new_message);
+    new_message.message = "";
+
+    for (it = this->last_messages.begin(); it != this->last_messages.end(); it++)
+    {
+        if (it->to == channel)
+        {
+            new_message.id = id;
+            new_message.status = "";
+            new_message.message = it->from + " " + it->message + "\n";
+            new_messages.push_back(new_message);
+        }
+    }
+    new_message.id = id;
+    new_message.status = "";
+    new_message.message = "-END-\n";
+    new_messages.push_back(new_message);
+    return 1;
+}
+
+int Protocol::_bot_get_channels(BOT msg, std::list<MESSAGE> &new_messages, int id)
+{
+    MESSAGE new_message;
+    new_message.id = id;
+    new_message.status = "";
+    new_message.message = "OK ";
+    new_messages.push_back(new_message);
+    new_message.message = "";
+
+    std::list<User>::iterator it;
+    std::list<std::string> channels;
+
+    for (it = this->loby.users.begin(); it != this->loby.users.end(); it++)
+    {
+        std::list <ROOM>::iterator it2;
+
+        for (it2 = it->rooms.rooms.begin(); it2 != it->rooms.rooms.end(); it2++)
+        {
+            if (std::find(channels.begin(), channels.end(), it2->room_name) == channels.end())
+                channels.push_back(it2->room_name);
+        }
+    }
+    std::list<std::string>::iterator it3;
+    for (it3 = channels.begin(); it3 != channels.end(); it3++)
+    {
+        new_message.message = *it3 + "\n";
+        new_messages.push_back(new_message);
+    }
+    new_message.message = "-END-\n";
+    new_messages.push_back(new_message);
     return 1;
 }

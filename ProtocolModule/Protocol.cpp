@@ -1,5 +1,7 @@
 #include "Protocol.hpp"
 
+
+int reply(int status, std::list<MESSAGE> &new_messages, int id);
 int precheck(Irc_message msg, int type);
 
 Protocol::Protocol(std::string pass)
@@ -75,6 +77,8 @@ std::list<MESSAGE>      Protocol::update(std::list<MESSAGE> messages)
     {
                 this->_message_handler(*it, new_messages);
     }
+    if (last_messages.size() > 150)
+        last_messages.pop_front();
     return (new_messages);
 }
 
@@ -108,12 +112,14 @@ void  Protocol::_message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages)
     
     if (_bot_is_bot(raw_msg))
     {
-        std::cout << "BOT REQUEST" << std::endl;
         BOT bot = bot_parse(raw_msg);
         if (bot_auth(this->bot_secret, bot.bot_secret))
         {
-            std::cout << "BOT PARSED" << std::endl;
             this->_bot_command_handler(bot, new_messages, id);
+        }
+        else
+        {
+            reply(0, new_messages, id);
         }
         return ;
     }

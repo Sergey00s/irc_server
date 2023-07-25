@@ -6,13 +6,13 @@ RM = rm -f
 LIBSERV = ServerModule/libserver.a
 PROTOCOL = ProtocolModule/libprotocol.a
 
-all: $(NAME) $(LIBSERV) $(PROTOCOL) 
+all: $(LIBSERV) $(PROTOCOL) $(NAME)
 
 $(LIBSERV):
-	make all -C ServerModule
+	make -C ServerModule
 
 $(PROTOCOL):
-	make all -C ProtocolModule
+	make -C ProtocolModule
 
 $(NAME): $(OBJS)
 	$(CP) $(OBJS) -o $(NAME) $(LIBSERV) $(PROTOCOL)

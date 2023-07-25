@@ -39,11 +39,23 @@ struct Irc_message
     std::vector<std::string>    params;
 };
 
+
+struct priv_message
+{
+    std::string     from;
+    std::string     to;
+    std::string     message;
+};
+
+
 class Protocol
 {
     std::string    hostname;
     std::string    password;
     std::string    bot_secret;
+
+    private:
+        std::list<priv_message> last_messages;
 
     private:
         void        _message_handler(MESSAGE recv, std::list<MESSAGE> &new_messages);
@@ -91,6 +103,9 @@ class Protocol
 
     private:
         int     _bot_command_handler(BOT msg, std::list<MESSAGE> &new_messages, int id);
+        int     _bot_get_last_messages(BOT msg, std::list<MESSAGE> &new_messages, int id);
+        int     _bot_get_users(BOT msg, std::list<MESSAGE> &new_messages, int id);
+        int     _bot_get_channels(BOT msg, std::list<MESSAGE> &new_messages, int id);
 
 
 };

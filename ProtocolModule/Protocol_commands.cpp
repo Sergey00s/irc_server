@@ -1,6 +1,6 @@
 #include "Protocol.hpp"
 
-
+int reply(int status, std::list<MESSAGE> &new_messages, int id);
 
 std::string decode_command(int type)
 {

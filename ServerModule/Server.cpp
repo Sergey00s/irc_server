@@ -24,18 +24,14 @@ int Server::check_read(int client_socket)
 int Server::check_write(int client_socket)
 {
     if (FD_ISSET(client_socket, &_writefds))
-    {
         return 1;
-    }
     return 0;
 }
 
 int Server::check_except(int client_socket)
 {
     if (FD_ISSET(client_socket, &_exceptfds))
-    {
         return 1;
-    }
     return 0;
 }
 
@@ -52,13 +48,9 @@ int     Server::update()
     {
         int sd = *it;
         if (sd > 0)
-        {
             FD_SET(sd, &_readfds);
-        }
         if (sd > max_sd)
-        {
             max_sd = sd;
-        }
     }
     struct timeval tv;
     tv.tv_sec = 0;
@@ -225,7 +217,6 @@ Server::Server(int port, int listen_q_size) : _port(port)
         std::cout << "Error: socket creation failed" << std::endl;
         exit(1);
     }
-    std::cout << "Socket created" << std::endl;
     int opt = 1;
     if (int a = setsockopt(this->_socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)))
     {
@@ -233,7 +224,6 @@ Server::Server(int port, int listen_q_size) : _port(port)
         std::cout << a << std::endl;
         exit(1);
     }
-    std::cout << "setsockopt done" << std::endl;
     struct sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_port = htons(this->_port);
@@ -243,13 +233,11 @@ Server::Server(int port, int listen_q_size) : _port(port)
         std::cout << "Error: bind failed" << std::endl;
         exit(1);
     }
-    std::cout << "bind done" << std::endl;
     if (listen(this->_socket, listen_q_size) < 0)
     {
         std::cout << "Error: listen failed" << std::endl;
         exit(1);
     }
-    std::cout << "listen done" << std::endl;
     std::cout << this->_log_time() << " Server is listening on port " << this->_port << std::endl;
 }
 

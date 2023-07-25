@@ -61,7 +61,8 @@ int main(int argc, char **argv)
     protocol.set_password("pass");
     while (1)
     {
-        server.update();
+        if (!server.update())
+            continue;
         if (server.check_read(server.get_socket()))
         {
             server.accept_connection();
@@ -74,10 +75,10 @@ int main(int argc, char **argv)
             std::cout << "Message received: " << it->message << std::endl;
         }
         std::list<MESSAGE> to_be_msg = protocol.update(convert_to_protocol_meesage_list(messages));
-        for (std::list<MESSAGE>::iterator it = to_be_msg.begin(); it != to_be_msg.end(); it++)
-        {
-           std::cout << "Message to send: " << it->message << std::endl;
-        }
+        // for (std::list<MESSAGE>::iterator it = to_be_msg.begin(); it != to_be_msg.end(); it++)
+        // {
+        //    std::cout << "Message to send: " << it->message << std::endl;
+        // }
         server.send_messages(convert_to_server_message_list(to_be_msg));
     }
     

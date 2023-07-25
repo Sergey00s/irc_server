@@ -54,6 +54,11 @@ int Protocol::_privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages
             new_message.message = ":" + from + " PRIVMSG " + to + " :" + message + "\r\n";
             new_messages.push_back(new_message);
         }
+        priv_message new_priv_message;
+        new_priv_message.from = from;
+        new_priv_message.to = to;
+        new_priv_message.message = message;
+        this->last_messages.push_back(new_priv_message);
     }
     return 1;
 }
