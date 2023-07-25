@@ -15,9 +15,7 @@ int Server::_push_message(int client_socket, std::string message, std::string st
 int Server::check_read(int client_socket)
 {
     if (FD_ISSET(client_socket, &_readfds))
-    {
         return 1;
-    }
     return 0;
 }
 
@@ -57,10 +55,7 @@ int     Server::update()
     tv.tv_usec = 0;
     int activity = select(max_sd + 1, &_readfds, NULL, NULL, &tv);
     if (activity < 0)
-    {
-        std::cout << "Error: select failed" << std::endl;
-        exit(1);
-    }
+        {std::cout << "Error: select failed" << std::endl; exit(1);};
     return activity;
 }
 
@@ -83,9 +78,7 @@ void    Server::_remove_client(int client_socket)
     for (std::list<int>::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
         if (*it != client_socket)
-        {
             updated_list.push_back(*it);
-        }
     }
     this->_clients = updated_list;
 }
@@ -143,8 +136,6 @@ int Server::send_message(int client_socket, std::string message)
     }
     return valsend;
 }
-
-
 
 int Server::itereate_clients()
 {

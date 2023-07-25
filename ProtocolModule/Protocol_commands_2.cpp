@@ -8,12 +8,11 @@ static int message_to_channel(std::string from, std::string to, std::string mess
     std::list<User>::iterator it;
     MESSAGE new_message;
 
+    int in_channel = 0;
     for (it = users.begin(); it != users.end(); it++)
     {
         if (it->get_nick_name() == from)
-        {
             continue ;
-        }
         new_message.id = it->get_id();
         new_message.message = ":" + from + " PRIVMSG " + to + " :" + message + "\r\n";
         new_messages.push_back(new_message);
@@ -39,6 +38,10 @@ int Protocol::_privmsg_command(Irc_message msg, std::list<MESSAGE> &new_messages
 
         if (to[0] == '#')
         {
+            if (user_in_loby->rooms.in(to) == 0)
+            {
+                return 0;
+            }
             message_to_channel(from, to, message, new_messages, loby);
         }
         else

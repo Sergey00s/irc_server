@@ -88,7 +88,6 @@ int Protocol::_protocol_command_handler(MESSAGE recv)
     if (status == "0000")
     {
         this->loby.remove_user(recv.id);
-        std::cout << "User " << recv.id << " disconnected" << std::endl;
         return (1);
     }
     return (0);
@@ -210,6 +209,8 @@ int        Protocol::_is_command(std::string command)
         return 1;
     if (command == "LIST")
         return 1;
+    if (command == "KICK")
+        return 1;
     return 0;
 }
 
@@ -220,7 +221,6 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
 {
     User current = this->loby.get_user_by_id(id);
     User *user = this->loby.get_user(current);
-    std::cout << "command handler :" << msg.command << std::endl;
     if (user == NULL)
     {
         User new_user(id);
@@ -230,17 +230,14 @@ void        Protocol::_command_handler(Irc_message msg, std::list<MESSAGE> &new_
     if (msg.command == "NICK")
     {
         this->_nick_command(msg, new_messages, id);
-        std::cout << "{nick command}" << std::endl;
     }
     else if (msg.command == "USER")
     {
         this->_user_command(msg, new_messages, id);
-        std::cout << "{user command}" << std::endl;
     }
     else if (msg.command == "PASS")
     {
         this->_pass_command(msg, new_messages, id);
-        std::cout << "{pass command}" << std::endl;
     }
     if (user && user->get_nick_name() != "" && user->get_nick_name() != ""  && user->get_status() != STATUS_REGISTERED)
     {

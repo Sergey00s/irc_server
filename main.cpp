@@ -64,21 +64,15 @@ int main(int argc, char **argv)
         if (!server.update())
             continue;
         if (server.check_read(server.get_socket()))
-        {
             server.accept_connection();
-            std::cout << "New connection" << std::endl;
-        }
         server.update_messages();
         std::list<Message> messages = server.get_messages();
-        for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
-        {
-            std::cout << "Message received: " << it->message << std::endl;
-        }
-        std::list<MESSAGE> to_be_msg = protocol.update(convert_to_protocol_meesage_list(messages));
-        // for (std::list<MESSAGE>::iterator it = to_be_msg.begin(); it != to_be_msg.end(); it++)
+        // for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
         // {
-        //    std::cout << "Message to send: " << it->message << std::endl;
+        //     std::cout << "message: " << it->message << std::endl;
+        //     std::cout << "client_socket: " << it->client_socket << std::endl;
         // }
+        std::list<MESSAGE> to_be_msg = protocol.update(convert_to_protocol_meesage_list(messages));
         server.send_messages(convert_to_server_message_list(to_be_msg));
     }
     
