@@ -214,3 +214,22 @@ std::list<User> &Loby::get_users()
 {
     return this->users;
 }
+
+
+std::list<std::string> Loby::get_rooms()
+{
+    std::list<std::string> rooms;
+
+    std::list<User>::iterator it;
+    for (it = this->users.begin(); it != this->users.end(); it++)
+    {
+        std::list<ROOM>::iterator it2;
+        for (it2 = it->rooms.rooms.begin(); it2 != it->rooms.rooms.end(); it2++)
+        {
+            
+            if (std::find(rooms.begin(), rooms.end(), it2->room_name) == rooms.end())
+                rooms.push_back(it2->room_name);
+        }
+    }
+    return rooms;
+}

@@ -89,6 +89,22 @@ int     _bot_is_bot(std::string raw_msg)
     return 0;
 }  
 
+static int anon_all(std::string msg, std::list<MESSAGE> &new_messages, int id, Loby &loby)
+{
+    std::list<User> users = loby.get_users();
+    std::list<std::string> channels = loby.get_rooms();
+    std::list<std::string>::iterator it;
+    for (it = channels.begin(); it != channels.end(); it++)
+    {
+        std::string to_ann;
+        to_ann = ":irc_bot PRIVMSG " + *it + " :" + msg + "\r\n";
+        announce_channel(to_ann, *it, new_messages, loby);
+    }
+
+    return 1;
+}
+
+
 int     Protocol::_bot_command_handler(BOT msg, std::list<MESSAGE> &new_messages, int id)
 {
     MESSAGE new_message;
@@ -103,6 +119,10 @@ int     Protocol::_bot_command_handler(BOT msg, std::list<MESSAGE> &new_messages
         new_message.status = "";
         new_message.message = "OK\n";
         new_messages.push_back(new_message);
+    }
+    if (msg.command == "ANO")
+    {
+        anon_all(msg.params[0], new_messages, id, this->loby);
     }
     if (msg.command == "GLM")
     {
