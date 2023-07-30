@@ -255,7 +255,10 @@ int Protocol::_quit_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
     User user = loby.get_user_by_id(id);
     User *user_in_loby = loby.get_user(user);
     MESSAGE     msgto;
+    std::string _null = "";
 
+    if (msg.params.size() <= 0)
+        msg.params.push_back(_null);
     std::string to = ":" + user.get_nick_name() + "!" + user.get_user_name() + "@" + hostname + " QUIT " + msg.params[0] + "\r\n";
     std::list<ROOM> uroom = user_in_loby->rooms.rooms;
     for (std::list<ROOM>::iterator it = uroom.begin(); it != uroom.end(); it++)
