@@ -1,3 +1,4 @@
+# add -Wall -wextra -werror  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 NAME= ./build/irc
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)

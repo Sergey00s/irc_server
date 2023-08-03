@@ -1,7 +1,5 @@
 #include "Irc.hpp"
 
-
-
 MESSAGE  convert_to_protocol_message(Message msg)
 {
     MESSAGE     message;
@@ -65,13 +63,9 @@ int main(int argc, char **argv)
             continue;
         if (server.check_read(server.get_socket()))
             server.accept_connection();
+
         server.update_messages();
         std::list<Message> messages = server.get_messages();
-        // for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
-        // {
-        //     std::cout << "message: " << it->message << std::endl;
-        //     std::cout << "client_socket: " << it->client_socket << std::endl;
-        // }
         std::list<MESSAGE> to_be_msg = protocol.update(convert_to_protocol_meesage_list(messages));
         server.send_messages(convert_to_server_message_list(to_be_msg));
     }
