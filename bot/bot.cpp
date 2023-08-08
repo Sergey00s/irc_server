@@ -11,6 +11,12 @@
 
 # include <fcntl.h>
 
+std::string to_server(std::string msg)
+{
+    std::string first = "BOT 123456789 ANO ";
+    return first + msg;
+}
+
 
 int main(int argc, char const *argv[])
 {
