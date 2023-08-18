@@ -52,11 +52,19 @@ std::list<Message> convert_to_server_message_list(std::list<MESSAGE> messages)
 int main(int argc, char **argv)
 {
 
-    Server server(6667, 10);
     Protocol protocol;
-    
     protocol.set_hostname("localhost");
-    protocol.set_password("pass");
+    int port = 6667;
+    if (argc > 1)
+    {
+        port = atoi(argv[1]);
+    }
+    if (argc > 2)
+    {
+        protocol.set_password(argv[2]);
+    }
+    
+    Server server(port, 5);
     while (1)
     {
         if (!server.update())
@@ -66,7 +74,16 @@ int main(int argc, char **argv)
 
         server.update_messages();
         std::list<Message> messages = server.get_messages();
+
+        for (std::list<Message>::iterator it = messages.begin(); it != messages.end(); it++)
+        {
+            std::cout << "Message from " << it->client_socket << " : " << it->message << std::endl;
+        }
         std::list<MESSAGE> to_be_msg = protocol.update(convert_to_protocol_meesage_list(messages));
+        for (std::list<MESSAGE>::iterator it = to_be_msg.begin(); it != to_be_msg.end(); it++)
+        {
+            std::cout << "Message to " << it->id << " : " << it->message << std::endl;
+        }
         server.send_messages(convert_to_server_message_list(to_be_msg));
     }
     

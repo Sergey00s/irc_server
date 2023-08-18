@@ -30,6 +30,7 @@ void fillMessages(std::vector<std::string> &messages)
     messages.push_back("The brain of a sea squirt extends down the length of its spinal cord.");
 }
 
+
 int main()
 {
 
@@ -50,7 +51,7 @@ int main()
         msg = toServer(msg);
         send(client_socket, msg.c_str(), msg.size(), 0);
 
-        sleep(10);
+        sleep(0);
     }
 
     close(client_socket);

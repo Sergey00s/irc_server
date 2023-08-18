@@ -291,6 +291,7 @@ void Server::update_messages()
                 msg.client_socket = client_socket;
                 this->_messages.push_back(msg);
             }
+       
         }
     }
     

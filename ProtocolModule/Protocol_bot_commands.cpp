@@ -109,28 +109,19 @@ int     Protocol::_bot_command_handler(BOT msg, std::list<MESSAGE> &new_messages
 {
     MESSAGE new_message;
     
-    if (msg.command == "ANN")
+
+
+    std::string msg_to_send;
+
+    for (int i = 0; i < msg.params.size(); i++)
     {
-        std::string message = msg.params[1];
-        std::string to_ann;
-        to_ann = ":irc_bot PRIVMSG " + msg.params[0] + " :" + message + "\r\n";
-        announce_channel(to_ann, msg.params[0], new_messages, this->loby);
-        new_message.id = id;
-        new_message.status = "";
-        new_message.message = "OK\n";
-        new_messages.push_back(new_message);
+        msg_to_send += msg.params[i];
+        if (i != msg.params.size() - 1)
+            msg_to_send += " ";
     }
     if (msg.command == "ANO")
     {
-        anon_all(msg.params[0], new_messages, id, this->loby);
-    }
-    if (msg.command == "GLM")
-    {
-        _bot_get_last_messages(msg, new_messages, id);
-    }
-    if (msg.command == "GCH")
-    {
-        _bot_get_channels(msg, new_messages, id);
+        anon_all(msg_to_send, new_messages, id, this->loby);
     }
     return 1;
 }
