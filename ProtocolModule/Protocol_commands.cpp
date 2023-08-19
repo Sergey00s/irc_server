@@ -4,7 +4,6 @@ int reply(int status, std::list<MESSAGE> &new_messages, int id);
 
 std::string decode_command(int type)
 {
-    int command_code;
 
     if (type == RPL_WELCOME)
     {
@@ -58,8 +57,6 @@ std::string Protocol::irc_message_to_client(int type, std::string to, std::strin
     std::string     message;
     std::string     prefix;
     std::string     command;
-    int             i = 0;
-
 
     command = decode_command(type);
     message = ":" + hostname + " " + command + " " + to + " " + ":" + params + "\r\n";
@@ -82,11 +79,12 @@ static int check_nick(std::string nick, Loby &loby)
 
 int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+        int k;
         if (msg.params.size() < 1)
         {
             return 0;
         }
-
+        k = (int)new_messages.size();
         std::string     new_nick = msg.params[0];
         User    user = loby.get_user_by_id(id);
         User    *user_in_loby = loby.get_user(user);
@@ -106,11 +104,13 @@ int Protocol::_nick_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 
 int Protocol::_user_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+        int k;
         if (msg.params.size() < 4)
         {
             return 0;
         }
 
+        k = (int)new_messages.size();
         std::string     user_name = msg.params[0];
         std::string     real_name = msg.params[3];
         User            user = loby.get_user_by_id(id);
@@ -196,7 +196,6 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
         for (std::vector<std::string>::iterator it = nicks.begin(); it != nicks.end(); it++)
         {
             nicks_str += *it + " ";
-
         }
         msgto.message = ":localhost 353 " + user_in_loby->get_nick_name() + " = " + channel_name + " :" + nicks_str + "\r\n";
         msgto.id = id;
@@ -222,10 +221,7 @@ int Protocol::_join_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 int Protocol::_ping_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
     User user = loby.get_user_by_id(id);
-    User *user_in_loby = loby.get_user(user);
     MESSAGE     msgto;
-
-
 
     msgto.message = irc_message_to_client(RPL_PONG, user.get_nick_name(), msg.params[0]);
     msgto.id = id;
@@ -238,10 +234,13 @@ int Protocol::_ping_command(Irc_message msg, std::list<MESSAGE> &new_messages, i
 
 int Protocol::_pass_command(Irc_message msg, std::list<MESSAGE> &new_messages, int id)
 {
+    int k;
     if (msg.params.size() < 1)
     {
         return 0;
     }
+    
+    k = new_messages.size();
     User user = loby.get_user_by_id(id);
     User *user_in_loby = loby.get_user(user);
     MESSAGE     msgto;

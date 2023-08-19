@@ -158,7 +158,7 @@ Irc_message Protocol::_irc_parser(std::string raw_msg)
     raw_msg = raw_msg_erase_crlf(raw_msg);
     
     int i = 0;
-    while (i < raw_msg.size())
+    while (i < (int)raw_msg.size())
     {
         if (raw_msg[i] == ' ')
         {

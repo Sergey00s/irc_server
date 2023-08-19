@@ -259,7 +259,7 @@ Server &Server::operator=(Server const & rhs)
 static std::vector<std::string> spliter(std::string str, char delim)
 {
     std::vector<std::string> v;
-    for (int i = 0; i < str.length(); i++)
+    for (int i = 0; i < (int)str.length(); i++)
     {
         if (str[i] == delim)
         {
@@ -280,12 +280,18 @@ void Server::update_messages()
     while ((client_socket = itereate_clients()) != -1)
     {
         if (this->check_read(client_socket) == 0)
+        {
             continue;
-        char *message = recive_message(client_socket);
-        if (message != NULL)
+        }
+        char *msg_s = recive_message(client_socket);
+        if (!msg_s)
+            continue;
+        std::string message(msg_s);
+            free(msg_s);
+        if (message.size())
         {
             std::vector<std::string> v = spliter(message, '\n');
-            for (int i = 0; i < v.size(); i++)
+            for (int i = 0; i < (int)v.size(); i++)
             {
                 msg.message = v[i];
                 msg.client_socket = client_socket;

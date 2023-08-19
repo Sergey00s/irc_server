@@ -1,8 +1,8 @@
 # add -Wall -wextra -werror  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-NAME= ./build/irc
+NAME= ./build/ircserv
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
-CP = g++ -std=c++98 #-Wall -Wextra -Werror 
+CP = g++ -std=c++98 -Wall -Wextra -Werror 
 RM = rm -f
 LIBSERV = ServerModule/libserver.a
 PROTOCOL = ProtocolModule/libprotocol.a

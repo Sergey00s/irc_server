@@ -1,6 +1,6 @@
 NAME=libprotocol.a
 SRCS = $(wildcard *.cpp)
-CP = g++ -std=c++98 #-Wall -Wextra -Werror
+CP = g++ -std=c++98 -Wall -Wextra -Werror
 RM = rm -f
 OBJS = $(SRCS:.cpp=.o)
 

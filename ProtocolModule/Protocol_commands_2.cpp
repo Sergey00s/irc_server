@@ -8,7 +8,6 @@ static int message_to_channel(std::string from, std::string to, std::string mess
     std::list<User>::iterator it;
     MESSAGE new_message;
 
-    int in_channel = 0;
     for (it = users.begin(); it != users.end(); it++)
     {
         if (it->get_nick_name() == from)

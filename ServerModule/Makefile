@@ -1,7 +1,7 @@
 NAME=libserver.a
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
-CP = g++ -std=c++98 #-Wall -Wextra -Werror
+CP = g++ -std=c++98 -Wall -Wextra -Werror
 RM = rm -f
 
 

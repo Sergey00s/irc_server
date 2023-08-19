@@ -17,10 +17,8 @@ int reply(int status, std::list<MESSAGE> &new_messages, int id)
 
 int reply_parse(std::string raw, int con)
 {
-    if (con)
-        raw = raw;
-    else
-        raw = raw + "-END-\n";
+    raw = "Ko";
+    con = 1;
     return 1;
 }
 
@@ -39,7 +37,7 @@ BOT bot_parse(std::string raw_msg)
         raw_msg.erase(raw_msg.size() - 1);
 
     int i = 0;
-    while (i < raw_msg.size())
+    while (i < (int)raw_msg.size())
     {
         if (raw_msg[i] == ' ')
         {
@@ -74,7 +72,7 @@ int     _bot_is_bot(std::string raw_msg)
 {
     std::vector <std::string>   params;
 
-    for (int i = 0; i < raw_msg.size(); i++)
+    for (int i = 0; i < (int)raw_msg.size(); i++)
     {
         if (raw_msg[i] == ' ')
         {
@@ -94,6 +92,7 @@ static int anon_all(std::string msg, std::list<MESSAGE> &new_messages, int id, L
     std::list<User> users = loby.get_users();
     std::list<std::string> channels = loby.get_rooms();
     std::list<std::string>::iterator it;
+    id = 0;
     for (it = channels.begin(); it != channels.end(); it++)
     {
         std::string to_ann;
@@ -108,15 +107,13 @@ static int anon_all(std::string msg, std::list<MESSAGE> &new_messages, int id, L
 int     Protocol::_bot_command_handler(BOT msg, std::list<MESSAGE> &new_messages, int id)
 {
     MESSAGE new_message;
-    
-
 
     std::string msg_to_send;
 
-    for (int i = 0; i < msg.params.size(); i++)
+    for (int i = 0; i < (int)msg.params.size(); i++)
     {
         msg_to_send += msg.params[i];
-        if (i != msg.params.size() - 1)
+        if (i != (int)msg.params.size() - 1)
             msg_to_send += " ";
     }
     if (msg.command == "ANO")
@@ -131,7 +128,8 @@ int Protocol::_bot_get_last_messages(BOT msg, std::list<MESSAGE> &new_messages, 
     MESSAGE new_message;
     std::string message;
     std::list<priv_message>::iterator it;
-    int i = 0;
+    int i;
+    i = 0;
     if (msg.params.size() < 1)
         return reply(0, new_messages, id);
     std::string channel = msg.params[0];
@@ -168,7 +166,7 @@ int Protocol::_bot_get_channels(BOT msg, std::list<MESSAGE> &new_messages, int i
 
     std::list<User>::iterator it;
     std::list<std::string> channels;
-
+    msg.bot_secret = "123456789";
     for (it = this->loby.users.begin(); it != this->loby.users.end(); it++)
     {
         std::list <ROOM>::iterator it2;
