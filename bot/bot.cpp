@@ -51,7 +51,7 @@ int main()
         msg = toServer(msg);
         send(client_socket, msg.c_str(), msg.size(), 0);
 
-        sleep(0);
+        sleep(120);
     }
 
     close(client_socket);

@@ -7,7 +7,7 @@ all: $(NAME)
 
 
 $(NAME): $(SRCS)
-	$(CXX) $(CXXFLAGS) $(SRCS) -o $(NAME)
+	$(CXX) -Wall -Wextra -Werror $(SRCS) -o $(NAME)
 
 
 clean:
